@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 import os
-
+import sys
 
 
 def fake_duplex(path):
@@ -18,9 +18,10 @@ def fake_duplex(path):
     counter=0
     total_pages = len(filenames)
     half_number_of_pages = total_pages/2
+    duplex_done_suffix="_TGMG"
 
     for jpg_file in filenames:
-        if "_TGMG" in jpg_file: break
+        if duplex_done_suffix in jpg_file: break
         counter+=1
 
         if counter <= half_number_of_pages:
@@ -29,7 +30,19 @@ def fake_duplex(path):
             new_number = (total_pages - (counter-1))*2
 
         full_old_path =os.path.join(path,jpg_file)
-        full_new_path =os.path.join(path,str(new_number)+"_TGMG.jpg")
+        new_number_str = '0'+str(new_number)
+        if new_number < 10: new_number_str='0'+new_number_str
+        full_new_path =os.path.join(path,new_number_str+ duplex_done_suffix+".jpg")
         os.rename(full_old_path, full_new_path)
 
-        # print "("+str(counter) + "->" + str(new_number)+") "
+        print "Renamed:"+full_old_path+" to "+full_new_path
+
+
+if __name__ == '__main__':
+    if (len(sys.argv) > 1):
+        path =sys.argv[1]
+        print path
+        fake_duplex(path)
+        print "Finished! Warning Only do this once!"
+    else:
+        print "You need to provide the path to the folder of images you want duplexed!"
